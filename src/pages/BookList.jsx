@@ -1,25 +1,32 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   listBooks,
   deleteBook,
   bookCoverUrl,
   exportBooksXlsx,
   exportBooksCsv,
-  downloadBookPdf
-} from '../api/books.js';
-import Pagination from '../components/Pagination.jsx';
+  downloadBookPdf,
+} from "../api/books.js";
+import Pagination from "../components/Pagination.jsx";
 
 export default function BookList() {
-  const [data, setData] = useState({ data: [], meta: { page: 1, totalPages: 1 } });
-  const [search, setSearch] = useState('');
+  const [data, setData] = useState({
+    data: [],
+    meta: { page: 1, totalPages: 1 },
+  });
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await listBooks({ page, limit: 10, search: search || undefined });
+      const res = await listBooks({
+        page,
+        limit: 10,
+        search: search || undefined,
+      });
       setData(res);
     } finally {
       setLoading(false);
@@ -36,10 +43,19 @@ export default function BookList() {
     load();
   };
 
+  // const onDelete = async (id) => {
+  //   if (!window.confirm("Delete this book?")) return;
+  //   await deleteBook(id);
+  //   load();
+  // };
   const onDelete = async (id) => {
-    if (!window.confirm('Delete this book?')) return;
-    await deleteBook(id);
-    load();
+    if (!window.confirm("Delete this book?")) return;
+    try {
+      await deleteBook(id);
+      load();
+    } catch (err) {
+      alert(err?.response?.data?.message || "Failed to delete book");
+    }
   };
 
   return (
@@ -47,10 +63,16 @@ export default function BookList() {
       <div className="card-header d-flex justify-content-between align-items-center flex-wrap">
         <h5 className="mb-0">Book List</h5>
         <div>
-          <button className="btn btn-success btn-sm mr-1" onClick={() => exportBooksXlsx(search)}>
+          <button
+            className="btn btn-success btn-sm mr-1"
+            onClick={() => exportBooksXlsx(search)}
+          >
             <i className="fas fa-file-excel mr-1"></i>Excel
           </button>
-          <button className="btn btn-info btn-sm mr-1" onClick={() => exportBooksCsv(search)}>
+          <button
+            className="btn btn-info btn-sm mr-1"
+            onClick={() => exportBooksCsv(search)}
+          >
             <i className="fas fa-file-csv mr-1"></i>CSV
           </button>
           <Link to="/books/add" className="btn btn-primary btn-sm">
@@ -105,8 +127,8 @@ export default function BookList() {
                         <img
                           src={bookCoverUrl(b.id)}
                           alt=""
-                          style={{ height: 40, width: 40, objectFit: 'cover' }}
-                          onError={(e) => (e.target.style.display = 'none')}
+                          style={{ height: 40, width: 40, objectFit: "cover" }}
+                          onError={(e) => (e.target.style.display = "none")}
                         />
                       ) : (
                         <span className="text-muted">—</span>
@@ -123,7 +145,10 @@ export default function BookList() {
                       >
                         <i className="fas fa-file-pdf"></i>
                       </button>
-                      <Link to={`/books/${b.id}/edit`} className="btn btn-sm btn-outline-primary mr-1">
+                      <Link
+                        to={`/books/${b.id}/edit`}
+                        className="btn btn-sm btn-outline-primary mr-1"
+                      >
                         <i className="fas fa-edit"></i>
                       </Link>
                       <button

@@ -1,18 +1,29 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { listStudents, deleteStudent, studentPhotoUrl } from '../api/students.js';
-import Pagination from '../components/Pagination.jsx';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  listStudents,
+  deleteStudent,
+  studentPhotoUrl,
+} from "../api/students.js";
+import Pagination from "../components/Pagination.jsx";
 
 export default function StudentList() {
-  const [data, setData] = useState({ data: [], meta: { page: 1, totalPages: 1 } });
-  const [search, setSearch] = useState('');
+  const [data, setData] = useState({
+    data: [],
+    meta: { page: 1, totalPages: 1 },
+  });
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await listStudents({ page, limit: 10, search: search || undefined });
+      const res = await listStudents({
+        page,
+        limit: 10,
+        search: search || undefined,
+      });
       setData(res);
     } finally {
       setLoading(false);
@@ -29,10 +40,19 @@ export default function StudentList() {
     load();
   };
 
+  // const onDelete = async (id) => {
+  //   if (!window.confirm('Delete this student?')) return;
+  //   await deleteStudent(id);
+  //   load();
+  // };
   const onDelete = async (id) => {
-    if (!window.confirm('Delete this student?')) return;
-    await deleteStudent(id);
-    load();
+    if (!window.confirm("Delete this student?")) return;
+    try {
+      await deleteStudent(id);
+      load();
+    } catch (err) {
+      alert(err?.response?.data?.message || "Failed to delete student");
+    }
   };
 
   return (
@@ -91,8 +111,13 @@ export default function StudentList() {
                         <img
                           src={studentPhotoUrl(s.id)}
                           alt=""
-                          style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: '50%' }}
-                          onError={(e) => (e.target.style.display = 'none')}
+                          style={{
+                            height: 40,
+                            width: 40,
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                          onError={(e) => (e.target.style.display = "none")}
                         />
                       ) : (
                         <span className="text-muted">—</span>

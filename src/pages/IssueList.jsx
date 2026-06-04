@@ -1,18 +1,25 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { listIssues, returnIssue } from '../api/issues.js';
-import Pagination from '../components/Pagination.jsx';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { listIssues, returnIssue } from "../api/issues.js";
+import Pagination from "../components/Pagination.jsx";
 
 export default function IssueList() {
-  const [data, setData] = useState({ data: [], meta: { page: 1, totalPages: 1 } });
+  const [data, setData] = useState({
+    data: [],
+    meta: { page: 1, totalPages: 1 },
+  });
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await listIssues({ page, limit: 10, status: status || undefined });
+      const res = await listIssues({
+        page,
+        limit: 10,
+        status: status || undefined,
+      });
       setData(res);
     } finally {
       setLoading(false);
@@ -24,12 +31,12 @@ export default function IssueList() {
   }, [page, status]);
 
   const onReturn = async (id) => {
-    if (!window.confirm('Mark this issue as returned?')) return;
+    if (!window.confirm("Mark this issue as returned?")) return;
     await returnIssue(id);
     load();
   };
 
-  const fmt = (d) => (d ? new Date(d).toLocaleDateString() : '—');
+  const fmt = (d) => (d ? new Date(d).toLocaleDateString() : "—");
 
   return (
     <div className="card">
@@ -91,12 +98,14 @@ export default function IssueList() {
                     <td>{fmt(i.issueDate)}</td>
                     <td>{fmt(i.returnDate)}</td>
                     <td>
-                      <span className={`badge badge-${i.status === 'ISSUED' ? 'warning' : 'success'}`}>
+                      <span
+                        className={`badge badge-${i.status === "ISSUED" ? "warning" : "success"}`}
+                      >
                         {i.status}
                       </span>
                     </td>
                     <td>
-                      {i.status === 'ISSUED' ? (
+                      {i.status === "ISSUED" ? (
                         <button
                           className="btn btn-sm btn-outline-success"
                           onClick={() => onReturn(i.id)}
